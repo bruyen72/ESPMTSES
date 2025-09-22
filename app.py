@@ -23,17 +23,35 @@ def requer_cargo(cargos_permitidos):
         return decorated_function
     return decorator
 
-# Garantir que as tabelas sejam criadas ao iniciar o aplicativo
-criar_tabelas()
+# Função para inicializar banco de dados de forma assíncrona
+def inicializar_banco():
+    try:
+        criar_tabelas()
+        if not buscar_usuario('admin@ses'):
+            adicionar_usuario('admin@ses', 'SES@admin2024', 'admin')
+            print('Usuário admin padrão criado.')
+        return True
+    except Exception as e:
+        print(f'Erro ao inicializar banco: {e}')
+        return False
 
-# Criar usuário admin padrão se não existir nenhum usuário
-with app.app_context():
-    if not buscar_usuario('admin@ses'):
-        adicionar_usuario('admin@ses', 'SES@admin2024', 'admin')
-        
-        print('Usuário admin padrão criado.')
-        
-        
+# Inicializar banco apenas uma vez
+if not hasattr(app, '_db_initialized'):
+    inicializar_banco()
+    app._db_initialized = True
+
+@app.route('/health')
+def health_check():
+    """Endpoint de health check para o Render"""
+    try:
+        # Verificar se o banco está funcionando
+        conn = conectar()
+        cursor = conn.cursor()
+        cursor.execute('SELECT 1')
+        conn.close()
+        return {'status': 'healthy', 'database': 'connected'}, 200
+    except Exception as e:
+        return {'status': 'unhealthy', 'error': str(e)}, 500
 
 @app.route('/')
 def index():

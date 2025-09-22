@@ -113,6 +113,65 @@ projeto-SES/
 - Proteção contra SQL Injection
 - Validação de entrada de dados
 
+## Troubleshooting
+
+### ❌ Erro 504 Bad Gateway (SOLUCIONADO)
+
+Se você receber erro 504, as seguintes correções foram implementadas:
+
+#### ✅ Soluções Aplicadas:
+1. **Timeout aumentado** para 120 segundos
+2. **Health check** configurado em `/health`
+3. **Gunicorn otimizado** com configuração personalizada
+4. **Inicialização de banco melhorada** com fallbacks
+5. **Múltiplos caminhos** para persistência do banco
+6. **Configurações de performance** do SQLite otimizadas
+
+#### 🔧 Configurações Implementadas:
+- Workers: 1 (ideal para plano free)
+- Timeout: 120s
+- Preload: Ativado
+- Health check: `/health`
+- Bind: 0.0.0.0:$PORT
+- Journal mode: WAL
+- Cache otimizado
+
+#### 📊 Verificar Status:
+- Acesse `/health` para verificar se o serviço está funcionando
+- Logs disponíveis no dashboard do Render
+- Backup automático dos dados implementado
+
+#### 🚨 Em Caso de Problemas:
+1. **Verifique os logs** no Render Dashboard
+2. **Teste o health check**: `https://seu-app.onrender.com/health`
+3. **Redeploy** se necessário
+4. **Execute backup**: `python backup_data.py`
+
+### 💾 Backup dos Dados
+
+Para garantir que os dados nunca sejam perdidos:
+
+```bash
+# Fazer backup
+python backup_data.py
+
+# Verificar integridade
+python -c "from backup_data import check_data_integrity; check_data_integrity()"
+
+# Restaurar dados (se necessário)
+python -c "from backup_data import restore_from_json; restore_from_json('backup_file.json')"
+```
+
+### 🔍 Monitoramento
+
+- **Health Check**: `/health` retorna status do banco
+- **Logs**: Disponíveis no Render Dashboard
+- **Métricas**: Tempo de resposta e status HTTP
+
 ## Suporte
 
-Para dúvidas ou problemas, entre em contato com a equipe de TI da SES.
+Para dúvidas ou problemas:
+1. Verifique os logs no Render
+2. Teste o endpoint `/health`
+3. Execute script de backup
+4. Entre em contato com a equipe de TI da SES

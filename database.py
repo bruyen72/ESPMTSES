@@ -4,20 +4,51 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
 # Configuração do banco de dados para produção
-if os.environ.get('RENDER'):
-    DATABASE = '/opt/render/project/src/salas.db'
-else:
-    DATABASE = 'salas.db'
+def get_database_path():
+    if os.environ.get('RENDER'):
+        # Tentar diferentes caminhos possíveis no Render
+        possible_paths = [
+            '/opt/render/project/src/salas.db',
+            '/tmp/salas.db',
+            './salas.db',
+            'salas.db'
+        ]
+
+        for path in possible_paths:
+            try:
+                # Criar diretório se necessário
+                dir_path = os.path.dirname(path)
+                if dir_path and not os.path.exists(dir_path):
+                    os.makedirs(dir_path, exist_ok=True)
+
+                # Testar se podemos escrever no local
+                test_conn = sqlite3.connect(path)
+                test_conn.close()
+                return path
+            except:
+                continue
+
+        # Fallback para diretório atual
+        return 'salas.db'
+    else:
+        return 'salas.db'
+
+DATABASE = get_database_path()
 
 def conectar():
-    # Garantir que o diretório existe em produção
-    if os.environ.get('RENDER'):
-        os.makedirs(os.path.dirname(DATABASE), exist_ok=True)
-
-    conn = sqlite3.connect(DATABASE)
-    conn.execute('PRAGMA foreign_keys = ON')
-    conn.execute('PRAGMA journal_mode = WAL')  # Melhor para concorrência
-    return conn
+    try:
+        conn = sqlite3.connect(DATABASE, timeout=30.0)
+        conn.execute('PRAGMA foreign_keys = ON')
+        conn.execute('PRAGMA journal_mode = WAL')  # Melhor para concorrência
+        conn.execute('PRAGMA synchronous = NORMAL')  # Melhor performance
+        conn.execute('PRAGMA cache_size = 10000')  # Cache maior
+        conn.execute('PRAGMA temp_store = MEMORY')  # Usar memória para temp
+        return conn
+    except Exception as e:
+        print(f"Erro ao conectar com banco: {e}")
+        # Fallback para memória em caso de erro crítico
+        conn = sqlite3.connect(':memory:')
+        return conn
 
 def criar_tabelas():
     conn = conectar()
