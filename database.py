@@ -115,8 +115,14 @@ def criar_tabelas():
     if cursor.fetchone()[0] == 0:
         salas = [
             ('Sala 1', 40),
-            ('Sala 2', 30),
-            ('Sala 3', 20)
+            ('Sala 2', 40),
+            ('Sala 3', 40),
+            ('Sala 4', 40),
+            ('Sala 5', 40),
+            ('Sala 6', 40),
+            ('Sala 7', 40),
+            ('Sala 8', 40),
+            ('Auditório', 150)
         ]
         cursor.executemany('INSERT INTO Sala (nome, capacidade) VALUES (?, ?)', salas)
 

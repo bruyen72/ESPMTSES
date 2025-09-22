@@ -219,22 +219,34 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="setor">Setor</label>
-                    <input type="number" name="setor" id="setor" value="{{ reserva[3] }}" required min="0">
+                    <label for="setor_id">Setor</label>
+                    <select name="setor_id" id="setor_id" required>
+                        <option value="1" {% if reserva[3] == 1 %}selected{% endif %}>Coepe</option>
+                        <option value="2" {% if reserva[3] == 2 %}selected{% endif %}>Cogepe</option>
+                        <option value="3" {% if reserva[3] == 3 %}selected{% endif %}>Coftes</option>
+                        <option value="4" {% if reserva[3] == 4 %}selected{% endif %}>Coades</option>
+                        <option value="5" {% if reserva[3] == 5 %}selected{% endif %}>Cotead</option>
+                        <option value="6" {% if reserva[3] == 6 %}selected{% endif %}>Gaesp</option>
+                        <option value="7" {% if reserva[3] == 7 %}selected{% endif %}>Gdr</option>
+                        <option value="8" {% if reserva[3] == 8 %}selected{% endif %}>Cies</option>
+                        <option value="9" {% if reserva[3] == 9 %}selected{% endif %}>Comitê de Ética</option>
+                        <option value="10" {% if reserva[3] == 10 %}selected{% endif %}>Núcleo de Residência em Saúde</option>
+                        <option value="11" {% if reserva[3] == 11 %}selected{% endif %}>Outros</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
                     <label for="sala_id">Sala</label>
                     <select name="sala_id" id="sala_id" required>
-                        <option value="1" {% if reserva[4] == '1' %}selected{% endif %}>Sala 1 - capacidade: 40</option>
-                        <option value="2" {% if reserva[4] == '2' %}selected{% endif %}>Sala 2 - capacidade: 40</option>
-                        <option value="3" {% if reserva[4] == '3' %}selected{% endif %}>Sala 3 - capacidade: 40</option>
-                        <option value="4" {% if reserva[4] == '4' %}selected{% endif %}>Sala 4 - capacidade: 40</option>
-                        <option value="5" {% if reserva[4] == '5' %}selected{% endif %}>Sala 5 - capacidade: 40</option>
-                        <option value="6" {% if reserva[4] == '6' %}selected{% endif %}>Sala 6 - capacidade: 40</option>
-                        <option value="7" {% if reserva[4] == '7' %}selected{% endif %}>Sala 7 - capacidade: 40</option>
-                        <option value="8" {% if reserva[4] == '8' %}selected{% endif %}>Sala 8 - capacidade: 40</option>
-                        <option value="9" {% if reserva[4] == '9' %}selected{% endif %}>Auditório - capacidade: 150</option>
+                        <option value="1" {% if reserva[4] == 1 %}selected{% endif %}>Sala 1 - capacidade: 40</option>
+                        <option value="2" {% if reserva[4] == 2 %}selected{% endif %}>Sala 2 - capacidade: 40</option>
+                        <option value="3" {% if reserva[4] == 3 %}selected{% endif %}>Sala 3 - capacidade: 40</option>
+                        <option value="4" {% if reserva[4] == 4 %}selected{% endif %}>Sala 4 - capacidade: 40</option>
+                        <option value="5" {% if reserva[4] == 5 %}selected{% endif %}>Sala 5 - capacidade: 40</option>
+                        <option value="6" {% if reserva[4] == 6 %}selected{% endif %}>Sala 6 - capacidade: 40</option>
+                        <option value="7" {% if reserva[4] == 7 %}selected{% endif %}>Sala 7 - capacidade: 40</option>
+                        <option value="8" {% if reserva[4] == 8 %}selected{% endif %}>Sala 8 - capacidade: 40</option>
+                        <option value="9" {% if reserva[4] == 9 %}selected{% endif %}>Auditório - capacidade: 150</option>
                     </select>
                 </div>
 

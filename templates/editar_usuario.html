@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Usuário - SES</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.css" rel="stylesheet" />
+    <style>
+        :root {
+            --primary-blue: #1a4b8c;
+            --secondary-blue: #2766cc;
+            --light-blue: #e8f1ff;
+            --hover-blue: #0056b3;
+            --white: #ffffff;
+        }
+
+        .form-container {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .form-title {
+            color: var(--primary-blue);
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 2rem;
+            border-bottom: 3px solid var(--secondary-blue);
+            padding-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--primary-blue);
+            font-weight: bold;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--secondary-blue);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--hover-blue);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            margin-top: 1rem;
+            width: 100%;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto px-4 py-8">
+        <div class="form-container">
+            <h1 class="form-title">Editar Usuário</h1>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert {% if category == 'error' %}bg-red-100 text-red-800{% else %}bg-green-100 text-green-800{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% if usuario[1] == 'admin@ses' %}
+                <div class="alert alert-warning">
+                    <strong>Aviso:</strong> Este é o usuário administrador padrão do sistema.
+                    Tenha cuidado ao fazer alterações.
+                </div>
+            {% endif %}
+
+            <form method="POST">
+                <div class="form-group">
+                    <label for="username" class="form-label">Nome de Usuário:</label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        class="form-input"
+                        value="{{ usuario[1] }}"
+                        required
+                        {% if usuario[1] == 'admin@ses' %}readonly{% endif %}
+                    >
+                    {% if usuario[1] == 'admin@ses' %}
+                        <small class="text-gray-600">O nome do usuário admin não pode ser alterado.</small>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="cargo" class="form-label">Cargo:</label>
+                    <select id="cargo" name="cargo" class="form-select" required>
+                        <option value="admin" {% if usuario[3] == 'admin' %}selected{% endif %}>
+                            Administrador
+                        </option>
+                        <option value="cotead" {% if usuario[3] == 'cotead' %}selected{% endif %}>
+                            COTEAD
+                        </option>
+                        <option value="colaborador" {% if usuario[3] == 'colaborador' %}selected{% endif %}>
+                            Colaborador
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Informações do Usuário:</label>
+                    <div class="bg-gray-50 p-3 rounded">
+                        <p><strong>ID:</strong> {{ usuario[0] }}</p>
+                        <p><strong>Criado em:</strong> {{ usuario[4] if usuario[4] else 'Não informado' }}</p>
+                        <p><strong>Último login:</strong> {{ usuario[5] if usuario[5] else 'Nunca' }}</p>
+                        <p><strong>Status:</strong>
+                            {% if usuario[6] %}
+                                <span class="text-green-600">Ativo</span>
+                            {% else %}
+                                <span class="text-red-600">Inativo</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    Salvar Alterações
+                </button>
+
+                <a href="{{ url_for('usuarios') }}" class="btn-secondary">
+                    Cancelar
+                </a>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
+</body>
+</html>

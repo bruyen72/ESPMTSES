@@ -53,6 +53,11 @@ def health_check():
     except Exception as e:
         return {'status': 'unhealthy', 'error': str(e)}, 500
 
+@app.route('/favicon.ico')
+def favicon():
+    """Serve o favicon para evitar erro 404"""
+    return redirect(url_for('static', filename='favicon.ico'))
+
 @app.route('/')
 def index():
     if 'username' in session:
@@ -497,54 +502,73 @@ def deletar_usuario(id):
     try:
         # Iniciar transação
         cursor.execute('BEGIN TRANSACTION')
-        
+
         # Buscar informações do usuário
         cursor.execute('SELECT username, cargo FROM Users WHERE id = ?', (id,))
         user = cursor.fetchone()
-        
+
         if not user:
             cursor.execute('ROLLBACK')
             flash('Usuário não encontrado.', 'error')
             return redirect(url_for('usuarios'))
-        
+
         username, cargo = user
-        
+
         # Verificar se é o admin padrão
         if username == 'admin@ses':
             cursor.execute('ROLLBACK')
             flash('Não é possível excluir o usuário admin padrão.', 'error')
             return redirect(url_for('usuarios'))
-        
+
         # Contar número de admins
         cursor.execute('SELECT COUNT(*) FROM Users WHERE cargo = "admin"')
         admin_count = cursor.fetchone()[0]
-        
+
         # Impedir exclusão do último admin
         if cargo == 'admin' and admin_count <= 1:
             cursor.execute('ROLLBACK')
             flash('Não é possível excluir o último administrador.', 'error')
             return redirect(url_for('usuarios'))
-        
-        # Remover reservas do usuário
-        cursor.execute('DELETE FROM Reservas WHERE nome = ? OR matricula = ?', (username, username))
-        
+
+        # CORREÇÃO: Remover reservas vinculadas ao user_id
+        cursor.execute('DELETE FROM Reservas WHERE user_id = ?', (id,))
+        reservas_removidas = cursor.rowcount
+
         # Deletar usuário
         cursor.execute('DELETE FROM Users WHERE id = ?', (id,))
-        
+
+        # Criar tabela de auditoria se não existir
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS AuditLog (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                admin_username TEXT NOT NULL,
+                action TEXT NOT NULL,
+                target_username TEXT NOT NULL,
+                target_cargo TEXT NOT NULL,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                details TEXT
+            )
+        ''')
+
         # Registrar log de auditoria
         cursor.execute('''
-            INSERT INTO AuditLog (admin_username, action, target_username, target_cargo, timestamp) 
-            VALUES (?, ?, ?, ?, datetime('now'))
-        ''', (session.get('username', 'Sistema'), 'delete_user', username, cargo))
-        
+            INSERT INTO AuditLog (admin_username, action, target_username, target_cargo, details)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (session.get('username', 'Sistema'), 'delete_user', username, cargo,
+              f'Usuário excluído. {reservas_removidas} reservas removidas.'))
+
         # Confirmar transação
         cursor.execute('COMMIT')
-        flash(f'Usuário {username} excluído com sucesso!', 'success')
-        
+
+        if reservas_removidas > 0:
+            flash(f'Usuário {username} excluído com sucesso! {reservas_removidas} reservas foram removidas.', 'success')
+        else:
+            flash(f'Usuário {username} excluído com sucesso!', 'success')
+
     except Exception as e:
         cursor.execute('ROLLBACK')
         print(f"Erro ao excluir usuário: {e}")
-        flash('Erro ao excluir usuário.', 'error')
+        flash(f'Erro ao excluir usuário: {str(e)}', 'error')
     finally:
         conn.close()
 
