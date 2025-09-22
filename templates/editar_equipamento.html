@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Equipamento</title>
+    <style>
+        :root {
+            --primary-blue: #1a4b8c;
+            --secondary-blue: #2766cc;
+            --light-blue: #e8f1ff;
+            --hover-blue: #0056b3;
+            --white: #ffffff;
+            --gray-light: #f8f9fa;
+            --gray-border: #dee2e6;
+            --error-red: #dc3545;
+            --error-light: #f8d7da;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--light-blue) 0%, #f5f9ff 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .page-header {
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        h1 {
+            color: var(--primary-blue);
+            font-size: 2.2rem;
+            margin: 1.5rem 0;
+            padding-bottom: 0.5rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary-blue), var(--secondary-blue));
+            border-radius: 2px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            color: var(--primary-blue);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--gray-border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: var(--gray-light);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--secondary-blue);
+            box-shadow: 0 0 0 4px rgba(39, 102, 204, 0.1);
+            background-color: var(--white);
+        }
+
+        input:hover {
+            border-color: var(--secondary-blue);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary-blue), var(--secondary-blue));
+            color: var(--white);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(to right, var(--secondary-blue), var(--primary-blue));
+        }
+
+        .btn-secondary:hover {
+            background: var(--light-blue);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .container {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        .error-message {
+            background: var(--error-light);
+            color: var(--error-red);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--error-red);
+            font-weight: 500;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1>Editar Equipamento</h1>
+    </div>
+
+    <div class="container">
+        <form action="/editar_equipamento/{{ equipamento[0] }}" method="POST">
+            <div class="form-group">
+                <label for="nome">Nome do Equipamento</label>
+                <input
+                    type="text"
+                    name="nome"
+                    id="nome"
+                    value="{{ equipamento[1] }}"
+                    required
+                    placeholder="Digite o nome do equipamento"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="quantidade">Quantidade</label>
+                <input
+                    type="number"
+                    name="quantidade"
+                    id="quantidade"
+                    value="{{ equipamento[2] }}"
+                    required
+                    min="1"
+                    placeholder="Digite a quantidade"
+                >
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                <a href="/equipamentos" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+    <div style="width: 100%; max-width: 800px; text-align: center;">
+        <a href="/" class="btn btn-secondary">Voltar ao Menu Principal</a>
+    </div>
+</body>
+</html>

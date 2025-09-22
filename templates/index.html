@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão</title>
+    <style>
+        :root {
+            --primary-blue: #003366;
+            --secondary-blue: #004d99;
+            --accent-blue: #0066cc;
+            --light-blue: #f0f5ff;
+            --white: #ffffff;
+            --error-red: #dc3545;
+            --error-light: #f8d7da;
+            --blocked-gray: #94989e;
+            --blocked-background: #f0f0f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: var(--light-blue);
+            line-height: 1.6;
+        }
+
+        header {
+            background: var(--primary-blue);
+            padding: 0.5rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0.5rem 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 70px;
+            margin-right: 1rem;
+        }
+
+        .logo-text {
+            color: var(--white);
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: var(--white);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-menu a:hover {
+            background-color: var(--secondary-blue);
+        }
+
+        main {
+            margin-top: 100px;
+            min-height: calc(100vh - 100px);
+            padding: 2rem;
+        }
+
+        .dashboard {
+            max-width: 1200px;
+            margin: 2rem auto;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+
+        .dashboard-title {
+            color: var(--primary-blue);
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-weight: bold;
+            border-bottom: 3px solid var(--accent-blue);
+            padding-bottom: 1rem;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 1rem;
+        }
+
+        .menu-item {
+            background: var(--white);
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--accent-blue);
+        }
+
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-link {
+            text-decoration: none;
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        .menu-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent-blue);
+        }
+
+        .menu-description {
+            color: #666;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                padding: 1rem;
+            }
+
+            .nav-menu {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+                margin-top: 1rem;
+            }
+
+            .logo img {
+                height: 50px;
+            }
+
+            main {
+                margin-top: 180px;
+            }
+
+            .dashboard {
+                margin: 1rem;
+                padding: 1rem;
+            }
+
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .error-message {
+            background: var(--error-light);
+            color: var(--error-red);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--error-red);
+            font-weight: 500;
+            text-align: center;
+        }
+
+        /* Estilo para elementos bloqueados */
+        .blocked {
+            background-color: var(--blocked-background);
+            color: var(--blocked-gray);
+            cursor: not-allowed;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .blocked .menu-icon {
+            color: var(--blocked-gray);
+        }
+
+        .blocked .menu-description {
+            color: var(--blocked-gray);
+        }
+
+        .blocked-overlay {
+            position: relative;
+        }
+
+        .blocked-overlay::after {
+            content: 'Acesso Restrito';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0,0,0,0.6);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='sesgov.jpg') }}" alt="GOVSES">
+                <span class="logo-text">Sistema de Gestão</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="/admin_dashboard" >Painel de admin</a>
+                <a href="/">Início</a>
+                <a href="/logout">Sair</a>
+                <a href="/agendar">Agendamento</a>
+                <a href="/agenda">Consultar Agenda</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="dashboard">
+            <h1 class="dashboard-title">Painel de Controle</h1>
+            <div class="menu-grid">
+                <!-- Agendar Sala -->
+                <div class="menu-item ">
+                    <a href="/agendar" class="menu-link">
+                        <div class="menu-icon">📅</div>
+                        Agendar Sala
+                        <div class="menu-description">
+                            Realize o agendamento de salas para reuniões e eventos
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Equipamentos -->
+                <div class="menu-item ">
+                    <a href="/equipamentos" class="menu-link">
+                        <div class="menu-icon">🖥️</div>
+                        Equipamentos
+                        <div class="menu-description">
+                            Gerencie equipamentos e recursos disponíveis
+                        </div>
+                    </a>
+                </div>
+
+                <div class="menu-item">
+                    <a href="/agenda" class="menu-link">
+                        <div class="menu-icon">📊</div>
+                        Agenda
+                        <div class="menu-description">
+                            Visualize todos os agendamentos e compromissos
+                        </div>
+                    </a>
+                </div>
+
+                <div class="menu-item">
+                    <a href="/logout" class="menu-link">
+                        <div class="menu-icon">🔒</div>
+                        Sair
+                        <div class="menu-description">
+                            Encerrar sessão do sistema com segurança
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

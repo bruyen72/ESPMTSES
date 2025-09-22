@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - SES</title>
+<style>
+body {
+font-family: 'Arial', sans-serif;
+background-color: #e3f2fd; /* Light blue background */
+margin: 0;
+padding: 0;
+display: flex;
+justify-content: center;
+align-items: center;
+min-height: 100vh;
+}
+
+.login-register-container {
+background: white;
+border-radius: 15px;
+box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+padding: 40px;
+width: 90%;
+max-width: 900px;
+text-align: center;
+}
+
+.logo-sesgov {
+max-width: 250px;
+margin-bottom: 30px;
+}
+
+.login-form {
+width: 100%;
+padding: 30px;
+border: 1px solid #ddd;
+border-radius: 10px;
+margin-bottom: 20px;
+box-sizing: border-box;
+text-align: left; /* Align text within forms to the left */
+}
+
+h2 {
+color: #0d47a1; /* Dark blue for headings */
+margin-top: 0;
+margin-bottom: 20px;
+text-align: center; /* Center form titles */
+}
+
+.form-group {
+margin-bottom: 20px;
+}
+
+.form-group label {
+display: block;
+margin-bottom: 8px;
+color: #333;
+font-weight: bold;
+}
+
+.form-group input[type="text"],
+.form-group input[type="password"] {
+width: 100%;
+padding: 12px;
+border: 2px solid #ccc;
+border-radius: 8px;
+box-sizing: border-box;
+font-size: 16px;
+margin-top: 5px;
+}
+
+button.form-button {
+background-color: #1565c0; /* Strong blue button color */
+color: white;
+padding: 14px 30px;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+font-size: 18px;
+transition: background-color 0.3s ease;
+width: 100%; /* Make buttons full width */
+margin-top: 10px;
+}
+
+button.form-button:hover {
+background-color: #0d47a1; /* Darker blue on hover */
+}
+
+p.form-footer {
+margin-top: 20px;
+text-align: center;
+}
+
+p.form-footer a {
+color: #1565c0;
+text-decoration: none;
+}
+
+p.form-footer a:hover {
+text-decoration: underline;
+}
+
+/* Responsive layout adjustments */
+@media (max-width: 768px) {
+.login-form {
+width: 100%; /* Make forms full width on smaller screens */
+padding: 20px;
+}
+}
+
+.error-message {
+background: #f8d7da;
+color: #dc3545;
+padding: 1rem;
+border-radius: 8px;
+margin-bottom: 2rem;
+border-left: 4px solid #dc3545;
+font-weight: 500;
+text-align: center;
+}
+</style>
+</head>
+<body>
+    <div class="login-register-container">
+        <div class="logo-container">
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                <div class="message">
+                  {% for message in messages %}
+                    <p>{{ message }}</p>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+            <img src="/static/sesgov.jpg" alt="Logo SESGOV" class="logo-sesgov">
+        </div>
+        <div class="login-form">
+            <h2>Login</h2>
+            <form action="/login" method="POST">
+                <div class="form-group">
+                    <label for="username">Usuário</label>
+                    <input type="text" id="username" name="username" placeholder="Digite seu usuário" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
+                </div>
+                <button type="submit" name="login-submit" class="form-button login-button">Entrar</button>
+              
+            </form>
+        </div>
+    </div>
+</body>
+</html>

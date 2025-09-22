@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendar Sala</title>
+    <style>
+        :root {
+            --primary-blue: #1a4b8c;
+            --secondary-blue: #2766cc;
+            --light-blue: #e8f1ff;
+            --hover-blue: #0056b3;
+            --white: #ffffff;
+            --gray-light: #f8f9fa;
+            --gray-border: #dee2e6;
+            --success-green: #28a745;
+            --success-light: #d4edda;
+            --error-red: #dc3545;
+            --error-light: #f8d7da;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--light-blue) 0%, #f5f9ff 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        h1 {
+            color: var(--primary-blue);
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+            padding-bottom: 0.5rem;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary-blue), var(--secondary-blue));
+            border-radius: 2px;
+        }
+
+        .message {
+            background: var(--success-light);
+            color: var(--success-green);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--success-green);
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .form-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            color: var(--primary-blue);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid var(--gray-border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: var(--white);
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--secondary-blue);
+            box-shadow: 0 0 0 3px rgba(39, 102, 204, 0.1);
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%231a4b8c' viewBox='0 0 16 16'%3E%3Cpath d='M8 11.5l-6-6 1.5-1.5L8 8.5l4.5-4.5L14 5.5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+
+        .equipamentos-section {
+            background: var(--gray-light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--white);
+            padding: 0.8rem;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 1.2rem;
+            height: 1.2rem;
+            cursor: pointer;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary-blue), var(--secondary-blue));
+            color: var(--white);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .form-card {
+                padding: 1.5rem;
+            }
+
+            .checkbox-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+
+        .error-message {
+            background: var(--error-light);
+            color: var(--error-red);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--error-red);
+            font-weight: 500;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Agendar Sala</h1>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+                {% if category == 'error' %}
+                 <div class="error-message">
+                {{ message }}
+                </div>
+                {% endif %}
+        
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <div class="form-card">
+            <form action="/agendar" method="POST">
+                <div class="form-group">
+                    <label for="nome">Nome</label>
+                    <input type="text" name="nome" id="nome" placeholder="Digite seu nome" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="matricula">Matrícula</label>
+                    <input type="number" name="matricula" id="matricula" placeholder="Digite sua matrícula" required
+                        min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="setor_id">Setor</label>
+                     <select name="setor_id" id="setor_id" required>
+                        <option value="">Selecione seu setor</option>
+                        <option value="1">Coepe</option>
+                        <option value="2">Cogepe</option>
+                        <option value="3">coftes</option>
+                        <option value="4">coades</option>
+                        <option value="5">Cotead</option>
+                        <option value="6">Gaesp</option>
+                        <option value="7">Gdr</option>
+                        <option value="8">Ciesmt</option>
+                        <option value="9">Comitê de Ética</option>
+                        <option value="10">Núcleo de Residência em Saúde</option>
+                        <option value="11">Dgesp</option>
+                        <option value="12">Outro</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="sala_id">Sala</label>
+                    <select name="sala_id" id="sala_id" required>
+                        <option value="">Selecione uma sala</option>
+                        <option value="1">Sala 1 - capacidade: 40</option>
+                        <option value="2">Sala 2 - capacidade: 40</option>
+                        <option value="3">Sala 3 - capacidade: 40</option>
+                        <option value="4">Sala 4 - capacidade: 40</option>
+                        <option value="5">Sala 5 - capacidade: 40</option>
+                        <option value="6">Sala 6 - capacidade: 40</option>
+                        <option value="7">Sala 7 - capacidade: 40</option>
+                        <option value="8">Sala 8 - capacidade: 40</option>
+                        <option value="9">Auditório - capacidade: 150</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="data">Data</label>
+                    <input type="date" name="data" id="data" required min="01-01-2024" max="31-12-9999">
+                </div>
+
+                <div class="form-group">
+                    <label for="periodo">Período</label>
+                    <select name="periodo" id="periodo" required>
+                        <option value="matutino">Matutino</option>
+                        <option value="vespertino">Vespertino</option>
+                        <option value="integral">Integral</option>
+                    </select>
+                </div>
+
+                <div class="equipamentos-section">
+                    <label>Equipamentos (opcional)</label>
+                    <div class="checkbox-grid">
+                        {% for equipamento in equipamentos %}
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="equipamentos" id="equip_{{ equipamento[0] }}"
+                                value="{{ equipamento[1] }}">
+                            <label for="equip_{{ equipamento[0] }}">
+                                {{ equipamento[1] }} ({{ equipamento[2] }})
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">Reservar Sala</button>
+                    <a href="/" class="btn btn-secondary">Voltar ao Menu</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

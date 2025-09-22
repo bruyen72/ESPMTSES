@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - SES</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.css" rel="stylesheet" />
+    <style>
+        :root {
+            --primary-blue: #1a4b8c;
+            --secondary-blue: #2766cc;
+            --light-blue: #e8f1ff;
+            --hover-blue: #0056b3;
+            --white: #ffffff;
+        }
+
+        .dashboard-card {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .admin-badge {
+            background-color: #dc2626;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            color: var(--primary-blue);
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background-color: var(--light-blue);
+        }
+
+        .nav-link.active {
+            background-color: var(--primary-blue);
+            color: white;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+    <!-- Navbar Superior -->
+    <nav class="bg-white border-b border-gray-200 fixed w-full z-30 top-0">
+        <div class="px-3 py-3 lg:px-5 lg:pl-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center justify-start">
+                    <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
+                        Painel Administrativo
+                        <span class="admin-badge">ADMIN</span>
+                    </h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="text-sm text-gray-600">Bem-vindo, {{ session.get('username') }}</span>
+                    <div class="flex items-center ml-3">
+                        <a href="{{ url_for('logout') }}"
+                            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm">
+                            Sair
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Menu de Navegação Lateral -->
+    <aside class="fixed top-0 left-0 z-20 w-64 h-screen pt-20 bg-white border-r border-gray-200">
+        <div class="h-full px-3 py-4 overflow-y-auto">
+            <ul class="space-y-2">
+                <li>
+                    <a href="{{ url_for('admin_dashboard') }}"
+                        class="nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('usuarios') }}"
+                        class="nav-link {% if request.endpoint == 'usuarios' %}active{% endif %}">
+                        Gerenciar Usuários
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('equipamentos') }}"
+                        class="nav-link {% if request.endpoint == 'equipamentos' %}active{% endif %}">
+                        Gerenciar Equipamentos
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('agenda') }}"
+                        class="nav-link {% if request.endpoint == 'agenda' %}active{% endif %}">
+                        Visualizar Agenda
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('agendar_sala') }}"
+                        class="nav-link {% if request.endpoint == 'agendar_sala' %}active{% endif %}">
+                        Nova Reserva
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- Conteúdo Principal -->
+    <div class="p-4 sm:ml-64 pt-20">
+        <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div
+                class="p-4 mb-4 text-sm {% if category == 'error' %}text-red-800 bg-red-50{% else %}text-green-800 bg-green-50{% endif %} rounded-lg">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div class="dashboard-card">
+                    <div class="stat-number">{{ usuarios|length }}</div>
+                    <div class="stat-label">Usuários Cadastrados</div>
+                </div>
+                <div class="dashboard-card">
+                    <div class="stat-number">{{ reservas|length }}</div>
+                    <div class="stat-label">Reservas Ativas</div>
+                </div>
+                <div class="dashboard-card">
+                    <div class="stat-number">{{ equipamentos|length }}</div>
+                    <div class="stat-label">Equipamentos</div>
+                </div>
+            </div>
+
+            <!-- Últimas Reservas -->
+            <div class="mb-4 bg-white p-4 rounded-lg shadow">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold">Últimas Reservas</h2>
+                    <a href="{{ url_for('agendar_sala') }}"
+                        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                        Nova Reserva
+                    </a>
+                </div>
+                <div class="relative overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-500">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">Nome</th>
+                                <th scope="col" class="px-6 py-3">Sala</th>
+                                <th scope="col" class="px-6 py-3">Data</th>
+                                <th scope="col" class="px-6 py-3">Período</th>
+                                <th scope="col" class="px-6 py-3">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reserva in reservas %}
+                            <tr class="bg-white border-b">
+                                <td class="px-6 py-4">{{ reserva[1] }}</td>
+                                <td class="px-6 py-4">{{ reserva[9] }}</td>
+                                <td class="px-6 py-4">{{ reserva[5] }}</td>
+                                <td class="px-6 py-4">{{ reserva[6] }}</td>
+                                <td class="px-6 py-4">
+                                    <a href="{{ url_for('editar_reserva', id=reserva[0]) }}"
+                                        class="font-medium text-blue-600 hover:underline">Editar</a>
+                                    <a href="{{ url_for('deletar_reserva', id=reserva[0]) }}"
+                                        class="font-medium text-red-600 hover:underline ml-3"
+                                        onclick="return confirm('Tem certeza que deseja excluir esta reserva?')">
+                                        Excluir
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Gerenciamento de Usuários -->
+            <div class="mb-4 bg-white p-4 rounded-lg shadow">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold">Usuários do Sistema</h2>
+                    <a href="{{ url_for('register') }}"
+                        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                        Adicionar Usuário
+                    </a>
+                </div>
+                <div class="relative overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-500">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">Usuário</th>
+                                <th scope="col" class="px-6 py-3">Cargo</th>
+                                <th scope="col" class="px-6 py-3">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for usuario in usuarios %}
+                            <tr class="bg-white border-b">
+                                <td class="px-6 py-4">{{ usuario[1] }}</td>
+                                <td class="px-6 py-4">
+                                    {% if usuario[3] == 'admin' %}
+                                    <span class="admin-badge">{{ usuario[3] }}</span>
+                                    {% else %}
+                                    {{ usuario[3] }}
+                                    {% endif %}
+                                    
+                                </td>
+                                
+                                <td class="px-6 py-4">
+                                    <a href="{{ url_for('editar_usuario', id=usuario[0]) }}"
+                                       class="font-medium text-blue-600 hover:underline">Editar</a>
+                                    {% if usuario[1] != 'admin@ses' %}
+                                    <a href="{{ url_for('deletar_usuario', id=usuario[0]) }}"
+                                       class="font-medium text-red-600 hover:underline ml-3"
+                                       onclick="return confirm('Tem certeza que deseja excluir o usuário {{ usuario[1] }}?')">
+                                        Excluir
+                                    </a>
+                                    
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Equipamentos -->
+            <div class="mb-4 bg-white p-4 rounded-lg shadow">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold">Equipamentos</h2>
+                    <a href="{{ url_for('equipamentos') }}"
+                        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                        Gerenciar Equipamentos
+                    </a>
+                </div>
+                <div class="relative overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-500">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">Nome</th>
+                                <th scope="col" class="px-6 py-3">Quantidade</th>
+                                <th scope="col" class="px-6 py-3">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for equipamento in equipamentos %}
+                            <tr class="bg-white border-b">
+                                <td class="px-6 py-4">{{ equipamento[1] }}</td>
+                                <td class="px-6 py-4">{{ equipamento[2] }}</td>
+                                <td class="px-6 py-4">
+                                    {% if equipamento[2] > 0 %}
+                                    <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                                        Disponível
+                                    </span>
+                                    {% else %}
+                                    <span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                                        Indisponível
+                                    </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js">
+        
+    
+
+
+    </script>
+</body>
+
+</html>
