@@ -1,12 +1,22 @@
 import sqlite3
+import os
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
-DATABASE = 'salas.db'
+# Configuração do banco de dados para produção
+if os.environ.get('RENDER'):
+    DATABASE = '/opt/render/project/src/salas.db'
+else:
+    DATABASE = 'salas.db'
 
 def conectar():
+    # Garantir que o diretório existe em produção
+    if os.environ.get('RENDER'):
+        os.makedirs(os.path.dirname(DATABASE), exist_ok=True)
+
     conn = sqlite3.connect(DATABASE)
     conn.execute('PRAGMA foreign_keys = ON')
+    conn.execute('PRAGMA journal_mode = WAL')  # Melhor para concorrência
     return conn
 
 def criar_tabelas():

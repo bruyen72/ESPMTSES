@@ -1,11 +1,12 @@
-from flask import Flask, render_template, redirect, url_for, request, flash, jsonify, session 
+from flask import Flask, render_template, redirect, url_for, request, flash, jsonify, session
 from functools import wraps
 from database import conectar, criar_tabelas, adicionar_usuario, buscar_usuario, verificar_senha, buscar_todos_usuarios
 from flask_login import current_user
+import os
 
 
 app = Flask(__name__)
-app.secret_key = 'chave_secreta'
+app.secret_key = os.environ.get('SECRET_KEY', 'fallback_secret_key_for_development_only')
 
 # Decorator para verificar permissões
 def requer_cargo(cargos_permitidos):
@@ -574,4 +575,5 @@ def editar_usuario(id):
     return render_template('editar_usuario.html', usuario=usuario)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
